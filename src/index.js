@@ -1,13 +1,13 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const {PORT, CLIENT_URL} = require('./config/serverConfig');
+const {PORT, CLIENT_URL, DB_SYNC} = require('./config/serverConfig');
 const cookieParser = require('cookie-parser');
 const { StatusCodes } = require('http-status-codes');
 
 const apiRoutes = require('./routes');
 const globalErrorHandler = require('./controllers/global-error');
-
+const db = require('./models/index');
 const app = express();
 
 const setUpAndStartServer = () => {
@@ -28,6 +28,11 @@ const setUpAndStartServer = () => {
             message: "Route not found"
         });
     });
+
+    if(DB_SYNC)
+    {
+        db.sequelize.sync({alter:true});
+    }
     
     app.use(globalErrorHandler);
     
